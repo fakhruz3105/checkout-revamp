@@ -1,40 +1,43 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import { useMemo, useState } from 'react'
 
 import { invoke } from '@tauri-apps/api/tauri'
 
+interface User {
+  id: number
+  username: string
+  password: string
+  created_at: number
+  updated_at: number
+}
+
 function App() {
-  const [count, setCount] = useState(0)
-  const [word, setWord] = useState('')
+  const [users, setUsers] = useState<User[]>([])
 
   const onClick = async () => {
     const res = await invoke<string>('get_users')
-    setWord(res)
+    const users: User[] = JSON.parse(res)
+    setUsers(users)
   }
 
+  const displayUsers = useMemo(() => {
+    return (
+      <>
+        {users.map(user => {
+          return (
+            <div className='flex space-x-2 justify-center items-center'>
+              <p>{user.id}</p>
+              <p>{user.username}</p>
+              <p>{user.password}</p>
+            </div>
+          )
+        })}
+      </>
+    )
+  }, [users])
+
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more {word}
-      </p>
+    <div className='w-[100vw] h-[100vh] flex flex-col justify-center items-center bg-slate-300'>
+      <p>{displayUsers}</p>
       <button onClick={onClick}>Fetch Word</button>
     </div>
   )
