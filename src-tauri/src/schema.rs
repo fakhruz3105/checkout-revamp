@@ -32,7 +32,7 @@ table! {
 table! {
     items (id) {
         id -> Nullable<Integer>,
-        barcode -> Double,
+        barcode -> Text,
         name -> Text,
         stock -> Integer,
         sold -> Integer,
